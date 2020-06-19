@@ -1,6 +1,7 @@
 import React from 'react';
 import './CardEditor.css';
 import Row from './Row';
+import {Link} from 'react-router-dom';
 
 class CardEditor extends React.Component {
     constructor(props) {
@@ -77,7 +78,7 @@ class CardEditor extends React.Component {
                 />
                 <button onClick={this.addCard}>Add card</button>
                 <hr />
-                <button onClick={this.props.switchMode}>Go to card viewer</button>
+                <Link to={"/viewer"}>Got to Viewer</Link>
             </div>
         )
     }

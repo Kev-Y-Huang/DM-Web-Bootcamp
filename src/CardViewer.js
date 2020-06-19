@@ -12,7 +12,7 @@ class CardViewer extends React.Component {
             index: 0,
             front: true
         }
-    }
+    };
 
     randomize = () => {
         const cards = this.state.cards.slice();
@@ -22,7 +22,7 @@ class CardViewer extends React.Component {
         }
         console.log(cards);
         this.setState({ cards, card: cards[0], index: 0 });
-    }
+    };
 
     previousCard = () => {
         if (this.state.index === 0) {
@@ -33,7 +33,7 @@ class CardViewer extends React.Component {
             index: this.state.index - 1,
             front: true
         })
-    }
+    };
 
     nextCard = () => {
         if (this.state.index === this.state.cards.length - 1) {
@@ -44,13 +44,13 @@ class CardViewer extends React.Component {
             index: this.state.index + 1,
             front: true
         })
-    }
+    };
 
     flipCard = () => {
         this.setState({
             front: !this.state.front
         })
-    }
+    };
 
     onKeyDown = (e) => {
         if (e.keyCode === 37) {
@@ -59,15 +59,15 @@ class CardViewer extends React.Component {
         else if (e.keyCode === 39) {
             this.nextCard();
         }
-    }
+    };
 
     componentDidMount() {
         document.addEventListener('keydown', this.onKeyDown);
-    }
+    };
 
     componentWillUnmount() {
         document.removeEventListener('keydown', this.onKeyDown);
-    }
+    };
 
     render() {
         return (
@@ -94,7 +94,7 @@ class CardViewer extends React.Component {
                 <Link to={"/editor"}>Got to Editor</Link>
             </div>
         )
-    }
+    };
 }
 
 export default CardViewer;

@@ -10,13 +10,14 @@ class CardViewer extends React.Component {
         super(props);
 
         this.state = {
+            cards: props.cards,
             index: 0,
             front: true
         }
     };
 
     randomize = () => {
-        const cards = Array.from(Array(this.props.cards.length),(x,i)=>i);
+        const cards = this.state.cards.slice();
         for (let i = cards.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [cards[i], cards[j]] = [cards[j], cards[i]];
@@ -59,6 +60,12 @@ class CardViewer extends React.Component {
         }
     };
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.cards !== prevProps.cards) {
+            this.setState({ cards: this.props.cards });
+        }
+    };
+
     componentDidMount() {
         document.addEventListener('keydown', this.onKeyDown);
     };
@@ -71,7 +78,7 @@ class CardViewer extends React.Component {
         if (!isLoaded(this.props.cards)) {
             return <div>Loading Data...</div>;
         }
-        if (isEmpty(this.props.cards)) {
+        if (isEmpty(this.state.cards)) {
             return <div>Page Not Found</div>;
         }
         return (
@@ -92,7 +99,7 @@ class CardViewer extends React.Component {
                 </button>
                 <p>You are on card {this.state.index + 1}/{this.props.cards.length}: {this.state.front ? "front" : "back"}</p>
                 <div className={'card'} onClick={this.flipCard}>
-                    <p>{this.state.front ? this.props.cards[this.state.index].front : this.props.cards[this.state.index].back}</p>
+                    <p>{this.state.front ? this.state.cards[this.state.index].front : this.state.cards[this.state.index].back}</p>
                 </div>
                 <button onClick={this.randomize}>Randomize</button>
                 <hr />

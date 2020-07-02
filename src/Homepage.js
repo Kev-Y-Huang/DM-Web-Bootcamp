@@ -15,7 +15,6 @@ class Homepage extends Component {
                 <nav>
                     <ul>
                         <li><Link to={'/editor'}>Go to Editor</Link></li>
-                        <li><Link to={'/viewer'}>Go to Viewer</Link></li>
                     </ul>
                 </nav>
                 <br/>

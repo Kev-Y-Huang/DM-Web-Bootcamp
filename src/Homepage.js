@@ -6,36 +6,59 @@ import {compose} from 'redux';
 
 class Homepage extends Component {
     render() {
-        if(!isLoaded(this.props.sets)){
+        if (!isLoaded(this.props.sets)) {
             return <div>Loading...</div>;
         }
         return (
             <div>
                 <h1>This is Flashcard!</h1>
-                <nav>
-                    <ul>
-                        <li><Link to={'/editor'}>Go to Editor</Link></li>
-                    </ul>
-                </nav>
-                <br/>
+                {
+                    this.props.isLoggedIn ?
+                        <nav>
+                            <ul>
+                                <li><Link to={'/editor'}>Go to Editor</Link></li>
+                            </ul>
+                        </nav> :
+                        null
+                }
                 <h2>Decks</h2>
                 <nav>
                     <ul>
                         {Object.entries(this.props.sets).map(set => (
-                            <li key={set[1].name}>
-                                <Link to={`/viewer/${set[0]}`}>{set[1].name}: {set[1].description}</Link>
-                            </li>
+                            set[1].private && set[1].user === this.props.isLoggedIn ?
+                                <li key={set[1].name}>
+                                    <Link to={`/viewer/${set[0]}`}>{set[1].name}: {set[1].description}</Link>
+                                </li> :
+                                <li key={set[1].name}>
+                                    <Link to={`/viewer/${set[0]}`}>{set[1].name}: {set[1].description}</Link>
+                                </li>
                         ))}
                     </ul>
                 </nav>
+                <h2>Account</h2>
+                {
+                    this.props.isLoggedIn ?
+                        <div>
+                            <div>{this.props.username}</div>
+                            <button onClick={() => this.props.firebase.logout()}>Logout</button>
+                        </div> :
+                        <div>
+                            <Link to={'/register'}>Register</Link>
+                            <br/>
+                            <Link to={'/login'}>Login</Link>
+                        </div>
+                }
             </div>
         )
     }
 }
 
 const mapStateToProps = state => {
-    const sets = state.firebase.data.homepage;
-    return {sets};
+    return {
+        sets: state.firebase.data.homepage,
+        username: state.firebase.profile.username,
+        isLoggedIn: state.firebase.auth.uid
+    };
 }
 
 export default compose(

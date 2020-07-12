@@ -1,21 +1,19 @@
 import React from 'react';
 import CardEditor from './CardEditor';
 import CardViewer from './CardViewer';
-import {Switch, Route} from 'react-router-dom';
 import Homepage from './Homepage';
+import PageRegister from './Register';
+import PageLogin from './Login';
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-  };
+import {Switch, Route} from 'react-router-dom';
+import {connect} from 'react-redux';
+import {isLoaded} from 'react-redux-firebase';
 
-  deleteCard = index => {
-    const cards = this.state.cards.slice();
-    cards.splice(index, 1);
-    this.setState({ cards });
-  }
+const App = props => {
+    if(!isLoaded(props.auth, props.profile)) {
+        return <div>Authentication loading...</div>
+    }
 
-  render() {
     return (
         <Switch>
           <Route exact path={"/"}>
@@ -27,12 +25,21 @@ class App extends React.Component {
           <Route exact path={"/viewer/:setId"}>
             <CardViewer/>
           </Route>
+          <Route exact path={"/register"}>
+            <PageRegister/>
+          </Route>
+            <Route exact path={"/login"}>
+                <PageLogin/>
+            </Route>
           <Route>
             <div>Page Not Found</div>
           </Route>
         </Switch>
     )
-  }
+};
+
+const mapStateToProps = state => {
+    return {auth: state.firebase.auth, profile: state.firebase.profile};
 }
 
-export default App;
+export default connect(mapStateToProps)(App);

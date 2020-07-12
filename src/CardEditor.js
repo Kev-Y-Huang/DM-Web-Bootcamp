@@ -1,9 +1,10 @@
 import React from 'react';
 import './CardEditor.css';
 import Row from './Row';
-import {Link, withRouter} from 'react-router-dom';
+import {Link, withRouter, Redirect} from 'react-router-dom';
 import {firebaseConnect} from 'react-redux-firebase';
 import {compose} from 'redux';
+import {connect} from 'react-redux';
 
 class CardEditor extends React.Component {
     constructor(props) {
@@ -18,18 +19,28 @@ class CardEditor extends React.Component {
                 {front: 'front6', back: 'back6'},
                 {front: 'front7', back: 'back7'},
                 {front: 'front8', back: 'back8'},
-                {front: 'front9', back: 'back9'}
+                {front: 'front9', back: 'back9'},
+                {front: 'front10', back: 'back10'}
             ],
             front: '',
             back: '',
             currentFront: '',
             currentBack: '',
             name: '',
-            description: ''
+            description: '',
+            private: false
         }
     }
 
-    handleChange = event => this.setState({[event.target.name]: event.target.value});
+    handleChange = event => {
+        const target = event.target;
+        const value = target.name === 'private' ? target.checked : target.value;
+        const name = target.name;
+
+        this.setState({
+            [name]: value
+        });
+    };
 
     addCard = () => {
         const front = this.state.front.trim();
@@ -62,19 +73,29 @@ class CardEditor extends React.Component {
 
     createDeck = () => {
         const setId = this.props.firebase.push('/flashcards').key;
-        const set = {
+        const updates = {};
+        updates[`/flashcards/${setId}`] = {
             cards: this.state.cards,
             name: this.state.name,
-            description: this.state.description
+            description: this.state.description,
+            private: this.state.private,
+            user: this.props.isLoggedIn
         };
-        const updates = {};
-        updates[`/flashcards/${setId}`] = set;
-        updates[`/homepage/${setId}`] = {name: this.state.name, description: this.state.description};
+        updates[`/homepage/${setId}`] = {
+            name: this.state.name,
+            description: this.state.description,
+            private: this.state.private,
+            user: this.props.isLoggedIn
+        };
         const onComplete = () => this.props.history.push(`/viewer/${setId}`);
         this.props.firebase.update(`/`, updates, onComplete())
-    }
+    };
 
     render() {
+        if (!this.props.isLoggedIn) {
+            return <Redirect to={'/register'}/>
+        }
+
         const cards = this.state.cards.map((card, index) => {
             return (
                 <Row card={card} index={index} editCard={this.editCard} deleteCard={this.deleteCard}/>
@@ -120,6 +141,14 @@ class CardEditor extends React.Component {
                 </table>
                 <br/>
                 <input
+                    name={'private'}
+                    type={'checkbox'}
+                    onChange={this.handleChange}
+                    checked={this.state.private}
+                />
+                <label for={'private'}>Private Deck</label>
+                <br/>
+                <input
                     name={'front'}
                     onChange={this.handleChange}
                     placeholder={'Front of card'}
@@ -148,7 +177,12 @@ class CardEditor extends React.Component {
     }
 }
 
+const mapStateToProps = state => {
+    return {isLoggedIn: state.firebase.auth.uid};
+};
+
 export default compose(
     firebaseConnect(),
+    connect(mapStateToProps),
     withRouter
 )(CardEditor);

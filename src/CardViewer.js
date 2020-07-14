@@ -1,7 +1,7 @@
 import React from 'react';
 import './CardViewer.css';
 import {Link, withRouter} from 'react-router-dom';
-import {firebaseConnect, isLoaded, isEmpty} from 'react-redux-firebase';
+import {firebaseConnect, isLoaded, isEmpty, populate} from 'react-redux-firebase';
 import {connect} from 'react-redux';
 import {compose} from 'redux';
 
@@ -84,6 +84,7 @@ class CardViewer extends React.Component {
         return (
             <div>
                 <h2>{this.props.name}</h2>
+                <h3>Created by {this.props.user}</h3>
                 <h3>Description: {this.props.description}</h3>
                 <button
                     onClick={this.previousCard}
@@ -103,25 +104,40 @@ class CardViewer extends React.Component {
                 </div>
                 <button onClick={this.randomize}>Randomize</button>
                 <hr />
+                <Link to={"/"}>Go to Homepage</Link>
+                <br/>
                 <Link to={"/editor"}>Go to Editor</Link>
             </div>
         )
     };
 }
 
-const mapStateToProps = state => {
-    const deck = state.firebase.data.set;
+const populates = [
+    {child: 'user', root: 'users'}
+];
+
+
+const mapStateToProps = (state, props) => {
+    const deck = populate(state.firebase, props.match.params.setId, populates);
+    console.log(deck);
     const name = deck && deck.name;
     const cards = deck && deck.cards;
     const description = deck && deck.description;
-    return {cards, name, description};
+    const user = deck && deck.user.username;
+    return {
+        cards,
+        name,
+        description,
+        user
+    };
 };
 
 export default compose(
     withRouter,
     firebaseConnect(props => {
+        console.log(populates);
         return [
-            {path: `/flashcards/${props.match.params.setId}`, storeAs: 'set'}
+            {path: `/flashcards/${props.match.params.setId}`, storeAs: props.match.params.setId, populates}
         ]
     }),
     connect(mapStateToProps)

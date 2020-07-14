@@ -4,6 +4,7 @@ import CardViewer from './CardViewer';
 import Homepage from './Homepage';
 import PageRegister from './Register';
 import PageLogin from './Login';
+import Profile from './Profile';
 
 import {Switch, Route} from 'react-router-dom';
 import {connect} from 'react-redux';
@@ -19,6 +20,9 @@ const App = props => {
           <Route exact path={"/"}>
             <Homepage/>
           </Route>
+          <Route exact path={"/profile"}>
+            <Profile/>
+          </Route>
           <Route exact path={"/editor"}>
             <CardEditor/>
           </Route>
@@ -28,9 +32,9 @@ const App = props => {
           <Route exact path={"/register"}>
             <PageRegister/>
           </Route>
-            <Route exact path={"/login"}>
-                <PageLogin/>
-            </Route>
+          <Route exact path={"/login"}>
+            <PageLogin/>
+          </Route>
           <Route>
             <div>Page Not Found</div>
           </Route>

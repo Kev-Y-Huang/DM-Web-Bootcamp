@@ -57,9 +57,9 @@ class Login extends React.Component {
                 <br/>
                 <button onClick={this.login}>Login</button>
                 <hr/>
-                <Link to={'/register'}>Register</Link>
-                <br/>
                 <Link to={'/'}>Homepage</Link>
+                <br/>
+                <Link to={'/register'}>Register</Link>
             </div>
         )
     }

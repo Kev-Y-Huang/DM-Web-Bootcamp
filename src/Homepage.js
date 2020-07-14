@@ -24,22 +24,25 @@ class Homepage extends Component {
                 <h2>Decks</h2>
                 <nav>
                     <ul>
-                        {Object.entries(this.props.sets).map(set => (
-                            set[1].private && set[1].user === this.props.isLoggedIn ?
-                                <li key={set[1].name}>
-                                    <Link to={`/viewer/${set[0]}`}>{set[1].name}: {set[1].description}</Link>
-                                </li> :
-                                <li key={set[1].name}>
-                                    <Link to={`/viewer/${set[0]}`}>{set[1].name}: {set[1].description}</Link>
-                                </li>
-                        ))}
+                        {Object.entries(this.props.sets).map(set => {
+                                if (set[1].private && set[1].user === this.props.isLoggedIn || !set[1].private) {
+                                    return (
+                                        <li key={set[1].name}>
+                                            <Link to={`/viewer/${set[0]}`}>{set[1].name}: {set[1].description}</Link>
+                                        </li>
+                                    )
+                                }
+                            }
+                        )}
                     </ul>
                 </nav>
                 <h2>Account</h2>
                 {
                     this.props.isLoggedIn ?
                         <div>
-                            <div>{this.props.username}</div>
+                            <div>Profile: </div>
+                            <Link to={'/profile'}>{this.props.username}</Link>
+                            <br/>
                             <button onClick={() => this.props.firebase.logout()}>Logout</button>
                         </div> :
                         <div>
